@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Imsakiyah</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --islamic-dark: #064e3b; /* Hijau Zamrud Gelap */
+            --islamic-green: #059669; /* Hijau Terang */
+            --islamic-gold: #d4af37; /* Emas */
+            --bg-light: #fdfbf7; /* Krem Terang */
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        /* Header Style */
+        header {
+            text-align: center;
+            padding: 20px 0;
+            background: linear-gradient(135deg, var(--islamic-dark), var(--islamic-green));
+            border-radius: 16px;
+            color: var(--white);
+            margin-bottom: 25px;
+            box-shadow: 0 10px 15px -3px rgba(6, 78, 59, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            margin: 0 0 5px 0;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--islamic-gold);
+        }
+
+        header p {
+            font-size: 0.85rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        /* Card Jadwal Hari Ini */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--islamic-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 18px;
+            background-color: var(--islamic-gold);
+            border-radius: 4px;
+        }
+
+        .card-today {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            margin-bottom: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .today-header {
+            text-align: center;
+            font-weight: 600;
+            color: var(--islamic-dark);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #e5e7eb;
+            font-size: 1.05rem;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .time-box {
+            background: #f3f4f6;
+            padding: 12px 5px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .time-box strong {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--islamic-dark);
+        }
+
+        /* Highlight untuk Imsak & Maghrib */
+        .highlight-imsak {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--islamic-gold);
+        }
+        .highlight-imsak strong { color: #b45309; }
+
+        .highlight-maghrib {
+            background: var(--islamic-dark);
+        }
+        .highlight-maghrib span { color: #d1fae5; }
+        .highlight-maghrib strong { color: var(--islamic-gold); }
+
+        /* Tabel Jadwal Full */
+        .table-wrapper {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            overflow-x: auto;
+            border: 1px solid #f3f4f6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 800px; /* Agar bisa di-scroll horizontal di HP */
+        }
+
+        th {
+            background-color: var(--islamic-dark);
+            color: var(--islamic-gold);
+            font-weight: 600;
+            padding: 14px 10px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #f3f4f6;
+            color: var(--text-dark);
+        }
+
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Warna khusus di tabel */
+        .td-imsak { color: #b45309; font-weight: 600; }
+        .td-maghrib { color: var(--islamic-green); font-weight: 700; }
+        .td-day { font-weight: 600; }
+
+        .row-active {
+            background-color: rgba(5, 150, 105, 0.1) !important;
+            border-left: 4px solid var(--islamic-green);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>JADWAL IMSAKIYAH</h1>
+        <p>Ramadhan 1447 H / 2026 M</p>
+    </header>
+
+    <div class="section-title">Jadwal Hari Ini</div>
+    <div class="card-today">
+        <div class="today-header" id="todayDate">Memuat jadwal...</div>
+        <div class="time-grid">
+            <div class="time-box highlight-imsak">
+                <span>Imsak</span>
+                <strong id="t-imsak">-</strong>
+            </div>
+            <div class="time-box">
+                <span>Shubuh</span>
+                <strong id="t-shubuh">-</strong>
+            </div>
+            <div class="time-box">
+                <span>Dzuhur</span>
+                <strong id="t-dzuhur">-</strong>
+            </div>
+            <div class="time-box">
+                <span>Asar</span>
+                <strong id="t-asar">-</strong>
+            </div>
+            <div class="time-box highlight-maghrib">
+                <span>Maghrib</span>
+                <strong id="t-maghrib">-</strong>
+            </div>
+            <div class="time-box">
+                <span>Isya</span>
+                <strong id="t-isya">-</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title">Jadwal Sebulan Penuh</div>
+    <p style="font-size: 0.75rem; color: #6b7280; margin-top: -5px; margin-bottom: 10px;">*Geser tabel ke kiri/kanan untuk melihat data lengkap</p>
+    
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>NO</th>
+                    <th>HARI</th>
+                    <th>TANGGAL</th>
+                    <th>IMSAK</th>
+                    <th>SHUBUH</th>
+                    <th>TERBIT</th>
+                    <th>DHUHA</th>
+                    <th>DZUHUR</th>
+                    <th>ASAR</th>
+                    <th>MAGHRIB</th>
+                    <th>ISYA</th>
+                    <th>TENGAH MALAM</th>
+                    <th>2/3 MALAM</th>
+                    <th>RASYDU QIBLAT</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
+
+    <footer>
+        created by xdaniel04<br>Marhaban Ya Ramadhan
+    </footer>
+
+    <script>
+        // Data lengkap 30 hari sesuai foto referensi
+        const dataJadwal = [
+            { no: 1, hari: 'KAMIS', tgl: '19 Februari 2026', imsak: '04:29', shubuh: '04:39', terbit: '05:53', dhuha: '06:21', dzuhur: '12:08', asar: '15:18', maghrib: '18:16', isya: '19:26', tghMalam: '23:26', duaTigaMalam: '01:10', rasydu: '11:21' },
+            { no: 2, hari: 'JUMAT', tgl: '20 Februari 2026', imsak: '04:30', shubuh: '04:40', terbit: '05:53', dhuha: '06:21', dzuhur: '12:08', asar: '15:17', maghrib: '18:16', isya: '19:26', tghMalam: '23:26', duaTigaMalam: '01:10', rasydu: '11:24' },
+            { no: 3, hari: 'SABTU', tgl: '21 Februari 2026', imsak: '04:30', shubuh: '04:40', terbit: '05:53', dhuha: '06:21', dzuhur: '12:08', asar: '15:17', maghrib: '18:16', isya: '19:26', tghMalam: '23:26', duaTigaMalam: '01:10', rasydu: '11:27' },
+            { no: 4, hari: 'AHAD', tgl: '22 Februari 2026', imsak: '04:30', shubuh: '04:40', terbit: '05:53', dhuha: '06:21', dzuhur: '12:08', asar: '15:16', maghrib: '18:15', isya: '19:25', tghMalam: '23:26', duaTigaMalam: '01:10', rasydu: '11:30' },
+            { no: 5, hari: 'SENIN', tgl: '23 Februari 2026', imsak: '04:30', shubuh: '04:40', terbit: '05:53', dhuha: '06:21', dzuhur: '12:08', asar: '15:15', maghrib: '18:15', isya: '19:25', tghMalam: '23:26', duaTigaMalam: '01:10', rasydu: '11:34' },
+            { no: 6, hari: 'SELASA', tgl: '24 Februari 2026', imsak: '04:30', shubuh: '04:40', terbit: '05:53', dhuha: '06:21', dzuhur: '12:08', asar: '15:14', maghrib: '18:15', isya: '19:24', tghMalam: '23:25', duaTigaMalam: '01:10', rasydu: '11:37' },
+            { no: 7, hari: 'RABU', tgl: '25 Februari 2026', imsak: '04:30', shubuh: '04:40', terbit: '05:53', dhuha: '06:21', dzuhur: '12:07', asar: '15:13', maghrib: '18:14', isya: '19:24', tghMalam: '23:25', duaTigaMalam: '01:10', rasydu: '11:40' },
+            { no: 8, hari: 'KAMIS', tgl: '26 Februari 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:21', dzuhur: '12:07', asar: '15:13', maghrib: '18:14', isya: '19:24', tghMalam: '23:25', duaTigaMalam: '01:10', rasydu: '11:43' },
+            { no: 9, hari: 'JUMAT', tgl: '27 Februari 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:21', dzuhur: '12:07', asar: '15:12', maghrib: '18:14', isya: '19:23', tghMalam: '23:25', duaTigaMalam: '01:10', rasydu: '11:46' },
+            { no: 10, hari: 'SABTU', tgl: '28 Februari 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:21', dzuhur: '12:07', asar: '15:11', maghrib: '18:13', isya: '19:23', tghMalam: '23:25', duaTigaMalam: '01:10', rasydu: '11:49' },
+            { no: 11, hari: 'AHAD', tgl: '01 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:21', dzuhur: '12:07', asar: '15:10', maghrib: '18:13', isya: '19:22', tghMalam: '23:25', duaTigaMalam: '01:09', rasydu: '11:53' },
+            { no: 12, hari: 'SENIN', tgl: '02 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:21', dzuhur: '12:06', asar: '15:09', maghrib: '18:13', isya: '19:22', tghMalam: '23:25', duaTigaMalam: '01:09', rasydu: '11:56' },
+            { no: 13, hari: 'SELASA', tgl: '03 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:06', asar: '15:08', maghrib: '18:12', isya: '19:21', tghMalam: '23:24', duaTigaMalam: '01:09', rasydu: '11:59' },
+            { no: 14, hari: 'RABU', tgl: '04 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:06', asar: '15:07', maghrib: '18:12', isya: '19:21', tghMalam: '23:24', duaTigaMalam: '01:09', rasydu: '12:02' },
+            { no: 15, hari: 'KAMIS', tgl: '05 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:06', asar: '15:06', maghrib: '18:11', isya: '19:20', tghMalam: '23:24', duaTigaMalam: '01:09', rasydu: '12:05' },
+            { no: 16, hari: 'JUMAT', tgl: '06 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:06', asar: '15:07', maghrib: '18:11', isya: '19:20', tghMalam: '23:24', duaTigaMalam: '01:09', rasydu: '12:08' },
+            { no: 17, hari: 'SABTU', tgl: '07 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:05', asar: '15:07', maghrib: '18:11', isya: '19:19', tghMalam: '23:24', duaTigaMalam: '01:09', rasydu: '12:11' },
+            { no: 18, hari: 'AHAD', tgl: '08 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:05', asar: '15:08', maghrib: '18:10', isya: '19:19', tghMalam: '23:24', duaTigaMalam: '01:09', rasydu: '12:14' },
+            { no: 19, hari: 'SENIN', tgl: '09 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:05', asar: '15:08', maghrib: '18:10', isya: '19:19', tghMalam: '23:23', duaTigaMalam: '01:09', rasydu: '12:17' },
+            { no: 20, hari: 'SELASA', tgl: '10 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:05', asar: '15:08', maghrib: '18:09', isya: '19:18', tghMalam: '23:23', duaTigaMalam: '01:08', rasydu: '12:20' },
+            { no: 21, hari: 'RABU', tgl: '11 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:04', asar: '15:09', maghrib: '18:09', isya: '19:18', tghMalam: '23:23', duaTigaMalam: '01:08', rasydu: '12:23' },
+            { no: 22, hari: 'KAMIS', tgl: '12 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:04', asar: '15:09', maghrib: '18:08', isya: '19:17', tghMalam: '23:23', duaTigaMalam: '01:08', rasydu: '12:26' },
+            { no: 23, hari: 'JUMAT', tgl: '13 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:53', dhuha: '06:20', dzuhur: '12:04', asar: '15:09', maghrib: '18:08', isya: '19:17', tghMalam: '23:22', duaTigaMalam: '01:08', rasydu: '12:29' },
+            { no: 24, hari: 'SABTU', tgl: '14 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:52', dhuha: '06:20', dzuhur: '12:04', asar: '15:10', maghrib: '18:08', isya: '19:16', tghMalam: '23:22', duaTigaMalam: '01:08', rasydu: '12:32' },
+            { no: 25, hari: 'AHAD', tgl: '15 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:52', dhuha: '06:19', dzuhur: '12:03', asar: '15:10', maghrib: '18:07', isya: '19:16', tghMalam: '23:22', duaTigaMalam: '01:07', rasydu: '12:35' },
+            { no: 26, hari: 'SENIN', tgl: '16 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:52', dhuha: '06:19', dzuhur: '12:03', asar: '15:10', maghrib: '18:07', isya: '19:15', tghMalam: '23:22', duaTigaMalam: '01:07', rasydu: '12:38' },
+            { no: 27, hari: 'SELASA', tgl: '17 Maret 2026', imsak: '04:31', shubuh: '04:41', terbit: '05:52', dhuha: '06:19', dzuhur: '12:03', asar: '15:10', maghrib: '18:06', isya: '19:15', tghMalam: '23:21', duaTigaMalam: '01:07', rasydu: '12:41' },
+            { no: 28, hari: 'RABU', tgl: '18 Maret 2026', imsak: '04:30', shubuh: '04:40', terbit: '05:52', dhuha: '06:19', dzuhur: '12:02', asar: '15:11', maghrib: '18:06', isya: '19:14', tghMalam: '23:21', duaTigaMalam: '01:07', rasydu: '12:44' },
+            { no: 29, hari: 'KAMIS', tgl: '19 Maret 2026', imsak: '04:30', shubuh: '04:40', terbit: '05:52', dhuha: '06:19', dzuhur: '12:02', asar: '15:11', maghrib: '18:05', isya: '19:14', tghMalam: '23:21', duaTigaMalam: '01:07', rasydu: '12:47' },
+            { no: 30, hari: 'JUMAT', tgl: '20 Maret 2026', imsak: '04:30', shubuh: '04:40', terbit: '05:52', dhuha: '06:19', dzuhur: '12:02', asar: '15:11', maghrib: '18:05', isya: '19:13', tghMalam: '23:20', duaTigaMalam: '01:06', rasydu: '12:50' }
+        ];
+
+        // Format tanggal hari ini di sistem Indonesia
+        const todayOptions = { day: '2-digit', month: 'long', year: 'numeric' };
+        const todayString = new Date().toLocaleDateString('id-ID', todayOptions); // Contoh: "23 Februari 2026"
+        
+        let aktifIndex = 0; // Default ke hari ke-1 jika tidak ada yang cocok
+
+        // Cek apakah tanggal hari ini ada di dalam data jadwal
+        for(let i = 0; i < dataJadwal.length; i++) {
+            if(dataJadwal[i].tgl === todayString) {
+                aktifIndex = i;
+                break;
+            }
+        }
+
+        const jadwalHariIni = dataJadwal[aktifIndex];
+
+        // Mengisi Card Jadwal Hari Ini
+        document.getElementById('todayDate').innerHTML = `Hari Ke-${jadwalHariIni.no} <br><span style="font-weight:400; font-size:0.85rem;">${jadwalHariIni.hari}, ${jadwalHariIni.tgl}</span>`;
+        document.getElementById('t-imsak').innerText = jadwalHariIni.imsak;
+        document.getElementById('t-shubuh').innerText = jadwalHariIni.shubuh;
+        document.getElementById('t-dzuhur').innerText = jadwalHariIni.dzuhur;
+        document.getElementById('t-asar').innerText = jadwalHariIni.asar;
+        document.getElementById('t-maghrib').innerText = jadwalHariIni.maghrib;
+        document.getElementById('t-isya').innerText = jadwalHariIni.isya;
+
+        // Render Data ke Tabel
+        const tbody = document.getElementById('tableBody');
+        
+        dataJadwal.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            
+            // Berikan highlight hijau pada baris jika itu jadwal hari ini
+            if(index === aktifIndex) {
+                tr.classList.add('row-active');
+            }
+
+            tr.innerHTML = `
+                <td>${item.no}</td>
+                <td class="td-day">${item.hari}</td>
+                <td>${item.tgl}</td>
+                <td class="td-imsak">${item.imsak}</td>
+                <td>${item.shubuh}</td>
+                <td>${item.terbit}</td>
+                <td>${item.dhuha}</td>
+                <td>${item.dzuhur}</td>
+                <td>${item.asar}</td>
+                <td class="td-maghrib">${item.maghrib}</td>
+                <td>${item.isya}</td>
+                <td>${item.tghMalam}</td>
+                <td>${item.duaTigaMalam}</td>
+                <td>${item.rasydu}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    </script>
+</body>
+</html>
